@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITF Barcode Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <link rel="manifest" href="manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js');
+        }
+    </script>
+</head>
+<body>
+    <h2>ITF Barcode Generator</h2>
+    <input type="text" id="barcodeInput" placeholder="Enter numbers (even digits)"/>
+    <button onclick="generateBarcode()">Generate Barcode</button>
+    <button onclick="downloadBarcode()">Download Barcode</button>
+    <button onclick="copyToClipboard()">Copy to Clipboard</button>
+    <br><br>
+    <canvas id="barcodeCanvas"></canvas>
+
+    <script>
+        function generateBarcode() {
+            let input = document.getElementById("barcodeInput").value;
+            let canvas = document.getElementById("barcodeCanvas");
+            if (/^\d+$/.test(input) && input.length % 2 === 0) {
+                JsBarcode(canvas, input, {
+                    format: "ITF",
+                    displayValue: true
+                });
+            } else {
+                alert("Please enter only numeric values with an even number of digits.");
+            }
+        }
+
+        function downloadBarcode() {
+            let canvas = document.getElementById("barcodeCanvas");
+            let link = document.createElement("a");
+            link.href = canvas.toDataURL("image/png");
+            link.download = "barcode.png";
+            link.click();
+        }
+
+        function copyToClipboard() {
+            let canvas = document.getElementById("barcodeCanvas");
+            canvas.toBlob(blob => {
+                navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+                alert("Barcode copied to clipboard!");
+            });
+        }
+    </script>
+</body>
+</html>
